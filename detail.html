@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <title>kindle电子书</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .main-text {
+            font-size: 1.3rem;
+        }
+
+        #content1 {
+            width: 100%;
+            padding: 0 10px;
+            text-align: justify;
+            height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .menu {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            background: #fff;
+            padding-bottom: 0;
+            border-top: 1px solid #ddd;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .menu div {
+            float: left;
+            padding-left: 40px;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div id='page'>
+    <div id='mainText' class='main-text'>
+        <!-- <h3>第一章：重生</h3> -->
+        <div id="content1"></div>
+        <div class="menu">
+            <div onclick="jump('/')">书架</div>
+            <div onclick="alert('开发中~~')">设置</div>
+            <div onclick="prev()">上一章</div>
+            <div onclick="next()">下一章</div>
+        </div>
+
+    </div>
+</div>
+<script src="./book.js?v1"></script>
+<script>
+    var menu = false;
+
+    getBookContent();
+
+    getChapterList();
+
+    // 获取 div 容器元素
+    var contentNode = $('#content1');
+    var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    // alert(windowHeight)
+    var contentHeight = windowHeight;
+    contentNode.setAttribute('style', 'height: ' + contentHeight + 'px;');
+
+    var container_rect = contentNode.getBoundingClientRect();
+    var container_width = container_rect.width;
+    var next_x = Math.floor(container_rect.right - container_rect.width * 0.3);
+    var prev_x = Math.floor(container_rect.left + container_rect.width * 0.3);
+
+    document.addEventListener('click', function(event) {
+        var x = event.clientX;
+        if (x > next_x) {
+            contentNode.scrollTop += contentHeight;
+        } else if (x < prev_x) {
+            contentNode.scrollTop -= contentHeight;
+        } else {
+            if (menu) {
+                $('.menu')[0].setAttribute('style', 'display:none;');
+            } else {
+                $('.menu')[0].setAttribute('style', 'display:block;');
+            }
+            menu = !menu;
+        }
+    });
+</script>
+</body>
+
+</html>
