@@ -1,4 +1,9 @@
-var baseUrl = 'http://192.168.2.219:1122';
+var baseUrl = getCookie('url');
+var setStatus = false;
+if (!baseUrl) {
+    setStatus = false;
+    openSet();
+}
 
 function $(key) {
     var a = key.charAt(0);
@@ -36,6 +41,31 @@ function getCookie(name) {
         }
     }
     return null;
+}
+
+function openSet() {
+    var url = getCookie('url');
+    if (!url) {
+        url = 'http://192.168.1.***:1122';
+    }
+    $('#url').value = url;
+    if (setStatus) {
+        $('.set-url')[0].setAttribute('style', 'display:none;');
+    } else {
+        $('.set-url')[0].setAttribute('style', 'display:block;');
+    }
+    setStatus = !setStatus;
+}
+
+function setUrl() {
+    var url = $('#url').value;
+    if (!url) {
+        alert('必须输入链接！');
+    } else {
+        setCookie('url', url);
+        openSet();
+        window.location.reload();
+    }
 }
 
 // 获取URL参数
@@ -99,8 +129,8 @@ function getList() {
         for (var i in data) {
             var book = data[i];
             var b = window.encodeURIComponent(JSON.stringify(book));
-            bookList += '<div class="book" onclick="jumpDetail(\''+b+'\')">' +
-                '<div class="cover-img">' +
+            bookList += '<div class="book" onclick="jumpDetail(\'' + b +
+                '\')">' + '<div class="cover-img">' +
                 '<img class="cover" src="' + baseUrl + '/cover?path=' +
                 book['coverUrl'] + '" alt="' + book['name'] + '"></div>' +
                 '<div class="info">' +
@@ -109,16 +139,11 @@ function getList() {
                 '<div class="author"> ' + book['author'] + ' </div>' +
                 '<div class="dot">•</div>' +
                 '<div class="size">共' + book['durChapterPos'] + '章</div>' +
-                '<div class="dot">•</div>' +
-                '<div class="date">' + dateFormat(book['durChapterTime']) +
-                '</div>' +
-                '</div>' +
+                '<div class="dot">•</div>' + '<div class="date">' +
+                dateFormat(book['durChapterTime']) + '</div>' + '</div>' +
                 '<div class="dur-chapter">已读：' + book['durChapterTitle'] +
-                '</div>' +
-                '<div class="last-chapter"> 最新：' +
-                book['latestChapterTitle'] + ' </div>' +
-                '</div>' +
-                '</div>';
+                '</div>' + '<div class="last-chapter"> 最新：' +
+                book['latestChapterTitle'] + ' </div>' + '</div>' + '</div>';
         }
         $('#book_list').innerHTML = bookList;
     });
@@ -192,21 +217,21 @@ function jump(url) {
 }
 
 function prev() {
-    var index = getBookField('durChapterIndex')
+    var index = getBookField('durChapterIndex');
     index--;
     if (index < 0) {
-        alert('已经到第一章了，前面没有喽！')
+        alert('已经到第一章了，前面没有喽！');
     } else {
-        updateBookField('durChapterIndex', index)
-        getBookContent()
+        updateBookField('durChapterIndex', index);
+        getBookContent();
     }
 }
 
 function next() {
-    var index = getBookField('durChapterIndex')
+    var index = getBookField('durChapterIndex');
     index++;
-    updateBookField('durChapterIndex', index)
-    getBookContent()
+    updateBookField('durChapterIndex', index);
+    getBookContent();
 }
 
 function dateFormat(t) {
@@ -224,19 +249,14 @@ function dateFormat(t) {
             S: this.getMilliseconds() //毫秒
         };
         if (/(y+)/.test(fmt)) {
-            fmt = fmt.replace(
-                RegExp.$1,
-                (this.getFullYear() + '').substr(4 - RegExp.$1.length)
-            );
+            fmt = fmt.replace(RegExp.$1,
+                (this.getFullYear() + '').substr(4 - RegExp.$1.length));
         }
         for (var k in o) {
             if (new RegExp('(' + k + ')').test(fmt)) {
-                fmt = fmt.replace(
-                    RegExp.$1,
-                    RegExp.$1.length === 1
-                        ? o[k]
-                        : ('00' + o[k]).substr(('' + o[k]).length)
-                );
+                fmt = fmt.replace(RegExp.$1,
+                    RegExp.$1.length === 1 ? o[k] : ('00' + o[k]).substr(
+                        ('' + o[k]).length));
             }
         }
         return fmt;

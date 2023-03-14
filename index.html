@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>kindle电子书</title>
+    <title>kindle阅读</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <style>
         #app {
@@ -40,87 +40,33 @@
             width: 260px;
             min-width: 260px;
             padding: 48px 36px;
-            background-color: #f7f7f7
+        }
+
+        .index-wrapper .navigation-wrapper .set-url {
+            text-align: center;
+            display: none;
+            margin: 20px;
+        }
+
+        .index-wrapper .navigation-wrapper .set-url input {
+            width: 80%;
+            margin: 20px;
+            background: none;
+            outline: none;
+            border: 1px solid #000000;
+            padding: 10px;
+        }
+
+        .index-wrapper .navigation-wrapper .set-url .done {
+            border: 1px solid #000000;
+            width: 200px;
+            margin: 0 auto;
+            padding: 10px;
         }
 
         .index-wrapper .navigation-wrapper .navigation-title {
             font-size: 24px;
             font-weight: 500;
-            font-family: FZZCYSK
-        }
-
-        .index-wrapper .navigation-wrapper .navigation-sub-title {
-            font-size: 16px;
-            font-weight: 300;
-            font-family: FZZCYSK;
-            margin-top: 16px;
-            color: #b1b1b1
-        }
-
-        .index-wrapper .navigation-wrapper .search-wrapper .search-input {
-            border-radius: 50%;
-            margin-top: 24px
-        }
-
-        .index-wrapper .navigation-wrapper .search-wrapper .search-input .el-input__inner {
-            border-radius: 50px;
-            border-color: #e3e3e3
-        }
-
-        .index-wrapper .navigation-wrapper .recent-wrapper {
-            margin-top: 36px
-        }
-
-        .index-wrapper .navigation-wrapper .recent-wrapper .recent-title {
-            font-size: 14px;
-            color: #b1b1b1;
-            font-family: FZZCYSK
-        }
-
-        .index-wrapper .navigation-wrapper .recent-wrapper .reading-recent {
-            margin: 18px 0
-        }
-
-        .index-wrapper .navigation-wrapper .recent-wrapper .reading-recent .recent-book {
-            font-size: 10px;
-            cursor: pointer
-        }
-
-        .index-wrapper .navigation-wrapper .setting-wrapper {
-            margin-top: 36px
-        }
-
-        .index-wrapper .navigation-wrapper .setting-wrapper .setting-title {
-            font-size: 14px;
-            color: #b1b1b1;
-            font-family: FZZCYSK
-        }
-
-        .index-wrapper .navigation-wrapper .setting-wrapper .no-point {
-            pointer-events: none
-        }
-
-        .index-wrapper .navigation-wrapper .setting-wrapper .setting-connect {
-            font-size: 8px;
-            margin-top: 16px;
-            cursor: pointer
-        }
-
-        .index-wrapper .navigation-wrapper .bottom-icons {
-            position: fixed;
-            bottom: 0;
-            height: 120px;
-            width: 260px;
-            -webkit-box-align: center;
-            -ms-flex-align: center;
-            align-items: center;
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-orient: horizontal;
-            -webkit-box-direction: normal;
-            -ms-flex-direction: row;
-            flex-direction: row
         }
 
         .index-wrapper .shelf-wrapper {
@@ -133,16 +79,6 @@
             -webkit-box-direction: normal;
             -ms-flex-direction: column;
             flex-direction: column
-        }
-
-        .index-wrapper .shelf-wrapper .el-icon-loading {
-            font-size: 36px;
-            color: #b5b5b5
-        }
-
-        .index-wrapper .shelf-wrapper .el-loading-text {
-            font-weight: 500;
-            color: #b5b5b5
         }
 
         .index-wrapper .shelf-wrapper .books-wrapper {
@@ -192,9 +128,6 @@
             flex-direction: column;
             -ms-flex-pack: distribute;
             justify-content: space-around;
-            -webkit-box-align: left;
-            -ms-flex-align: left;
-            align-items: left;
             height: 112px;
             margin-left: 20px;
             -webkit-box-flex: 1;
@@ -203,12 +136,18 @@
         }
 
         .index-wrapper .shelf-wrapper .books-wrapper .wrapper .book .info .name {
-            width: -webkit-fit-content;
             width: -moz-fit-content;
             width: fit-content;
             font-size: 22px;
             font-weight: 700;
-            color: #33373d
+            color: #33373d;
+            word-wrap: break-word;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 1;
+            text-align: left;
         }
 
         .index-wrapper .shelf-wrapper .books-wrapper .wrapper .book .info .sub {
@@ -244,12 +183,6 @@
             text-align: left
         }
 
-        .index-wrapper .shelf-wrapper .books-wrapper .wrapper .book:hover {
-            background: rgba(0, 0, 0, .1);
-            -webkit-transition-duration: .5s;
-            transition-duration: .5s
-        }
-
         .index-wrapper .shelf-wrapper .books-wrapper .wrapper:last-child {
             margin-right: auto
         }
@@ -280,18 +213,6 @@
                 align-items: flex-end
             }
 
-            .index-wrapper .bottom-wrapper {
-                display: -webkit-box;
-                display: -ms-flexbox;
-                display: flex;
-                -webkit-box-orient: horizontal;
-                -webkit-box-direction: normal;
-                -ms-flex-direction: row;
-                flex-direction: row;
-                -ms-flex-pack: distribute;
-                justify-content: space-around
-            }
-
             .index-wrapper .navigation-wrapper {
                 padding: 20px 24px;
                 -webkit-box-sizing: border-box;
@@ -299,23 +220,6 @@
                 width: 100%
             }
 
-            .index-wrapper .navigation-wrapper .bottom-wrapper .recent-wrapper,
-            .index-wrapper .navigation-wrapper .bottom-wrapper .setting-wrapper {
-                display: -webkit-box;
-                display: -ms-flexbox;
-                display: flex;
-                -webkit-box-orient: vertical;
-                -webkit-box-direction: normal;
-                -ms-flex-direction: column;
-                flex-direction: column;
-                -webkit-box-align: center;
-                -ms-flex-align: center;
-                align-items: center
-            }
-
-            .index-wrapper .navigation-wrapper .bottom-icons {
-                display: none
-            }
 
             .index-wrapper .shelf-wrapper {
                 padding: 0
@@ -349,6 +253,16 @@
 <body>
 <div id="app">
     <div class="index-wrapper">
+        <div class="navigation-wrapper">
+            <div class="navigation-title-wrapper">
+                <div class="navigation-title">阅读</div>
+                <div class="navigation-sub-title" onclick="openSet()">设置链接</div>
+            </div>
+            <div class="set-url">
+                <label>阅读 web 服务链接（设置自己的链接后才能使用） <input type="text" id="url" value=""></label>
+                <div class="done" onclick="setUrl()">确定</div>
+            </div>
+        </div>
         <div class="shelf-wrapper">
             <div class="books-wrapper">
                 <div class="wrapper" id="book_list"></div>
