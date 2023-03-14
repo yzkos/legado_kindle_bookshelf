@@ -1,5 +1,6 @@
-var baseUrl = getCookie('url');
 var setStatus = false;
+var chapterList = [];
+var baseUrl = getCookie('url');
 if (!baseUrl) {
     setStatus = false;
     openSet();
@@ -57,6 +58,7 @@ function openSet() {
     setStatus = !setStatus;
 }
 
+// 设置web服务链接
 function setUrl() {
     var url = $('#url').value;
     if (!url) {
@@ -66,34 +68,6 @@ function setUrl() {
         openSet();
         window.location.reload();
     }
-}
-
-// 获取URL参数
-function getParameterByName(name) {
-    // 将 name 转义为正则表达式
-    name = name.replace(/[\[\]]/g, '\\$&');
-    // 获取 URL 中的查询参数部分
-    var url = window.location.search;
-    // 判断 URL 中是否包含查询参数
-    if (!url) {
-        return null;
-    }
-    // 处理查询参数字符串
-    url = decodeURIComponent(url);
-    // 获取查询参数数组
-    var params = url.substr(1).split('&');
-    // 查找指定参数的值
-    for (var i = 0; i < params.length; i++) {
-        var param = params[i];
-        var pos = param.indexOf('=');
-        var paramName = param.substr(0, pos);
-        var paramValue = param.substr(pos + 1);
-        // 返回指定参数的值
-        if (paramName === name) {
-            return paramValue.replace(/\+/g, ' ');
-        }
-    }
-    return null;
 }
 
 function ajax(method, url, data, callback) {
@@ -122,6 +96,7 @@ function ajax(method, url, data, callback) {
     xhr.send(JSON.stringify(data));
 }
 
+// 获取书籍列表
 function getList() {
     ajax('GET', '/getBookshelf', {}, function(err, res) {
         var data = res.data;
@@ -149,6 +124,7 @@ function getList() {
     });
 }
 
+// 获取章节内容
 function getBookContent() {
     var url = getBookField('bookUrl');
     var index = getBookField('durChapterIndex');
@@ -163,32 +139,32 @@ function getBookContent() {
             var con = $('#content1');
             con.innerHTML = c;
             con.scrollTop = 0;
+            saveBookProgress(index)
         });
 }
 
-function getDetail(url) {
-    ajax('GET', '/getChapterList' + url, {}, function(err, res) {
-        console.log(res);
-    });
+// 保存阅读进度
+function saveBookProgress(index) {
+    if (chapterList[index-1]['title']) {
+        ajax('POST', '/saveBookProgress', {
+            name: getBookField('name'),
+            author: getBookField('author'),
+            durChapterIndex: index,
+            durChapterPos: 1,
+            durChapterTime: new Date().getTime(),
+            durChapterTitle: chapterList[index-1]['title']
+        }, function(err, res) {
+            console.log(res);
+        });
+    }
 }
 
-function saveBookProgress() {
-    ajax('POST', '/saveBookProgress', {
-        name: bookName,
-        author: bookAuthor,
-        durChapterIndex: index,
-        durChapterPos: chapterPos,
-        durChapterTime: new Date().getTime(),
-        durChapterTitle: title
-    }, function(err, res) {
-        console.log(res);
-    });
-}
-
+// 获取目录
 function getChapterList() {
     var url = getBookField('bookUrl');
     ajax('GET', '/getChapterList?url=' + url, {}, function(err, res) {
-        console.log(res);
+        console.log(res)
+        chapterList = res.data
     });
 }
 
