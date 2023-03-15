@@ -1,12 +1,16 @@
 var setStatus = false;
 var chapterList = [];
 var baseUrl = getCookie('url');
+
+var config = {
+    contentHeight: 0
+};
 if (!baseUrl) {
     setStatus = false;
     openSet();
 }
 
-function $(key) {
+function $$(key) {
     var a = key.charAt(0);
     var n;
     if (a === '#') {
@@ -49,23 +53,22 @@ function openSet() {
     if (!url) {
         url = 'http://192.168.1.***:1122';
     }
-    $('#url').value = url;
+    $$('#url').value = url;
     if (setStatus) {
-        $('.set-url')[0].setAttribute('style', 'display:none;');
+        $$('.set-url')[0].setAttribute('style', 'display:none;');
     } else {
-        $('.set-url')[0].setAttribute('style', 'display:block;');
+        $$('.set-url')[0].setAttribute('style', 'display:block;');
     }
     setStatus = !setStatus;
 }
 
 // 设置web服务链接
 function setUrl() {
-    var url = $('#url').value;
+    var url = $$('#url').value;
     if (!url) {
         alert('必须输入链接！');
     } else {
         setCookie('url', url);
-        openSet();
         window.location.reload();
     }
 }
@@ -83,7 +86,7 @@ function ajax(method, url, data, callback) {
         xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
     }
 
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 callback(null, JSON.parse(xhr.responseText));
@@ -98,8 +101,9 @@ function ajax(method, url, data, callback) {
 
 // 获取书籍列表
 function getList() {
-    ajax('GET', '/getBookshelf', {}, function(err, res) {
+    ajax('GET', '/getBookshelf', {}, function (err, res) {
         var data = res.data;
+        console.log(data);
         var bookList = '';
         for (var i in data) {
             var book = data[i];
@@ -113,47 +117,55 @@ function getList() {
                 '<div class="sub">' +
                 '<div class="author"> ' + book['author'] + ' </div>' +
                 '<div class="dot">•</div>' +
-                '<div class="size">共' + book['durChapterPos'] + '章</div>' +
+                '<div class="size">共' + book['totalChapterNum'] + '章</div>' +
                 '<div class="dot">•</div>' + '<div class="date">' +
                 dateFormat(book['durChapterTime']) + '</div>' + '</div>' +
                 '<div class="dur-chapter">已读：' + book['durChapterTitle'] +
                 '</div>' + '<div class="last-chapter"> 最新：' +
                 book['latestChapterTitle'] + ' </div>' + '</div>' + '</div>';
         }
-        $('#book_list').innerHTML = bookList;
+        $$('#book_list').innerHTML = bookList;
     });
 }
 
 // 获取章节内容
-function getBookContent() {
+function getBookContent(type) {
+    $$('.menu')[0].setAttribute('style', 'display:none;');
     var url = getBookField('bookUrl');
     var index = getBookField('durChapterIndex');
     ajax('GET', '/getBookContent?url=' + url + '&index=' + index, {},
-        function(err, res) {
+        function (err, res) {
             console.log(res);
             var content = res.data.split(/\n+/);
             var c = '';
             for (var i in content) {
                 c += '<p>' + content[i] + '</p>';
             }
-            var con = $('#content1');
-            con.innerHTML = c;
-            con.scrollTop = 0;
-            saveBookProgress(index)
+            $('#content1').html(c);
+
+            if (type === 'next') {
+                $$('#content1').scrollTop = 0;
+                config.contentHeight = 0;
+            } else {
+                console.log($$('#content1').scrollHeight);
+                $$('#content1').scrollTop = $$('#content1').scrollHeight;
+                config.contentHeight = $$('#content1').scrollHeight;
+            }
+            saveBookProgress(index);
         });
 }
 
 // 保存阅读进度
 function saveBookProgress(index) {
-    if (chapterList[index-1]['title']) {
+    if (chapterList[index - 1]['title']) {
         ajax('POST', '/saveBookProgress', {
             name: getBookField('name'),
             author: getBookField('author'),
             durChapterIndex: index,
             durChapterPos: 1,
             durChapterTime: new Date().getTime(),
-            durChapterTitle: chapterList[index-1]['title']
-        }, function(err, res) {
+            durChapterTitle: chapterList[index - 1]['title']
+        }, function (err, res) {
             console.log(res);
         });
     }
@@ -162,10 +174,27 @@ function saveBookProgress(index) {
 // 获取目录
 function getChapterList() {
     var url = getBookField('bookUrl');
-    ajax('GET', '/getChapterList?url=' + url, {}, function(err, res) {
-        console.log(res)
-        chapterList = res.data
+    ajax('GET', '/getChapterList?url=' + url, {}, function (err, res) {
+        console.log(res);
+        chapterList = res.data;
+        var html = '';
+        for (var i in chapterList) {
+            var a = chapterList[i];
+            html += '<p onclick=\'jumpChapterList(' + a['index'] + ')\'>' +
+                a['title'] + '</p>';
+        }
+        $$('.chapter-list')[0].innerHTML = html;
     });
+}
+
+function openChapterList() {
+    $$('.chapter-list')[0].setAttribute('style', 'display:block;');
+}
+
+function jumpChapterList(index) {
+    updateBookField('durChapterIndex', index);
+    getBookContent('next');
+    $$('.chapter-list')[0].setAttribute('style', 'display:none;');
 }
 
 function jumpDetail(book) {
@@ -199,7 +228,7 @@ function prev() {
         alert('已经到第一章了，前面没有喽！');
     } else {
         updateBookField('durChapterIndex', index);
-        getBookContent();
+        getBookContent('prev');
     }
 }
 
@@ -207,14 +236,14 @@ function next() {
     var index = getBookField('durChapterIndex');
     index++;
     updateBookField('durChapterIndex', index);
-    getBookContent();
+    getBookContent('next');
 }
 
 function dateFormat(t) {
     var time = new Date().getTime();
     var int = parseInt((time - t) / 1000);
     var str;
-    Date.prototype.format = function(fmt) {
+    Date.prototype.format = function (fmt) {
         var o = {
             'M+': this.getMonth() + 1, //月份
             'd+': this.getDate(), //日

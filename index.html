@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>kindle阅读</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         #app {
             font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -27,9 +27,6 @@
         .index-wrapper {
             height: 100%;
             width: 100%;
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
             -webkit-box-orient: horizontal;
             -webkit-box-direction: normal;
             -ms-flex-direction: row;
@@ -37,9 +34,23 @@
         }
 
         .index-wrapper .navigation-wrapper {
-            width: 260px;
             min-width: 260px;
-            padding: 48px 36px;
+            padding: 20px 24px;
+            box-sizing: border-box;
+            width: 100%
+        }
+
+        .index-wrapper .navigation-title-wrapper {
+            white-space: nowrap;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            -webkit-box-align: end;
+            -ms-flex-align: end;
+            align-items: flex-end
         }
 
         .index-wrapper .navigation-wrapper .set-url {
@@ -71,7 +82,6 @@
 
         .index-wrapper .shelf-wrapper {
             padding: 48px 48px;
-            width: 100%;
             display: -webkit-box;
             display: -ms-flexbox;
             display: flex;
@@ -136,7 +146,6 @@
         }
 
         .index-wrapper .shelf-wrapper .books-wrapper .wrapper .book .info .name {
-            width: -moz-fit-content;
             width: fit-content;
             font-size: 22px;
             font-weight: 700;
@@ -200,27 +209,6 @@
                 flex-direction: column
             }
 
-            .index-wrapper .navigation-title-wrapper {
-                white-space: nowrap;
-                display: -webkit-box;
-                display: -ms-flexbox;
-                display: flex;
-                -webkit-box-pack: justify;
-                -ms-flex-pack: justify;
-                justify-content: space-between;
-                -webkit-box-align: end;
-                -ms-flex-align: end;
-                align-items: flex-end
-            }
-
-            .index-wrapper .navigation-wrapper {
-                padding: 20px 24px;
-                -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-                width: 100%
-            }
-
-
             .index-wrapper .shelf-wrapper {
                 padding: 0
             }
@@ -240,7 +228,6 @@
             }
 
             .index-wrapper .shelf-wrapper .books-wrapper .wrapper .book {
-                -webkit-box-sizing: border-box;
                 box-sizing: border-box;
                 width: 100%;
                 margin-bottom: 0;

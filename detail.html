@@ -4,13 +4,15 @@
 <head>
     <meta charset="utf-8">
     <title>kindle阅读</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         html,
+        head,
         body {
             padding: 0;
             margin: 0;
             height: 100%;
+            overflow: hidden;
         }
 
         a {
@@ -22,12 +24,15 @@
         }
 
         #content1 {
-            /*width: 100%;*/
             padding: 0 10px;
             text-align: justify;
             height: 250px;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow: hidden;
+        }
+
+        #content1 p {
+            margin: 0;
+            line-height: 2.4rem;
         }
 
         .menu {
@@ -35,16 +40,28 @@
             position: fixed;
             bottom: 0;
             background: #fff;
-            padding-bottom: 0;
+            padding: 20px;
             border-top: 1px solid #ddd;
             width: 100%;
-            margin: 0 auto;
+
+            box-sizing: border-box;
         }
 
         .menu div {
             float: left;
             padding-left: 40px;
-            padding-top: 20px;
+        }
+
+        .chapter-list {
+            position: fixed;
+            top: 0;
+            background: #fff;
+            display: none;
+        }
+
+        .chapter-list p {
+            padding: 10px;
+            margin: 0;
         }
     </style>
 </head>
@@ -54,32 +71,33 @@
     <div id='mainText' class='main-text'>
         <!-- <h3>第一章：重生</h3> -->
         <div id="content1"></div>
+        <div class="chapter-list"></div>
         <div class="menu">
             <div onclick="jump('/')">书架</div>
             <div onclick="alert('开发中~~')">设置</div>
+            <div onclick="openChapterList()">目录</div>
             <div onclick="prev()">上一章</div>
             <div onclick="next()">下一章</div>
         </div>
 
     </div>
 </div>
+<script src="./jquery-2.2.4.min.js?v1"></script>
 <script src="./book.js?v1"></script>
 <script>
     var menu = false;
 
+    getBookContent('next');
     getChapterList();
-    getBookContent();
-
 
     // 获取 div 容器元素
-    var contentNode = $('#content1');
+    var contentNode = $$('#content1');
+
     var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    // alert(windowHeight)
     var contentHeight = windowHeight;
     contentNode.setAttribute('style', 'height: ' + contentHeight + 'px;');
 
     var container_rect = contentNode.getBoundingClientRect();
-    var container_width = container_rect.width;
     var next_x = Math.floor(container_rect.right - container_rect.width * 0.3);
     var prev_x = Math.floor(container_rect.left + container_rect.width * 0.3);
 
@@ -87,17 +105,29 @@
         var x = event.clientX;
         if (x > next_x) {
             contentNode.scrollTop += contentHeight;
+            page()
         } else if (x < prev_x) {
             contentNode.scrollTop -= contentHeight;
+            page()
         } else {
             if (menu) {
-                $('.menu')[0].setAttribute('style', 'display:none;');
+                $$('.menu')[0].setAttribute('style', 'display:none;');
             } else {
-                $('.menu')[0].setAttribute('style', 'display:block;');
+                $$('.menu')[0].setAttribute('style', 'display:block;');
             }
             menu = !menu;
         }
     });
+
+    function page() {
+        if (contentNode.scrollTop !== 0 && config.contentHeight === contentNode.scrollTop) {
+            next();
+        } else if (contentNode.scrollTop === 0 && config.contentHeight === contentNode.scrollTop) {
+            prev();
+        } else {
+            config.contentHeight = contentNode.scrollTop;
+        }
+    }
 </script>
 </body>
 
